@@ -21,6 +21,7 @@ body {
   align-items: center;
   justify-content: flex-end;
   padding: 1rem;
+  overflow-x: hidden;
 }
 
 #buttons {

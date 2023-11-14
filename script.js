@@ -1,27 +1,30 @@
+let display = {
+  value: "",
+  DOMElement: document.getElementById("display"),
+  update(str) {
+    this.value += str;
+    this.DOMElement.innerText = this.value;
+  },
+};
+
 let firstNumber;
 let operator;
 let secondNumber;
 
-function add(a, b) {
-  return a + b;
-}
+// Button click handlers
+const buttons = document.querySelector("#buttons");
+buttons.addEventListener("click", (e) => {
+  const isNumberButton = e.target.classList.contains("number");
+  if (isNumberButton) {
+    const buttonValue = e.target.innerText;
+    display.update(buttonValue);
+  }
+});
 
-function substract(a, b) {
-  return a - b;
-}
-
-function multiply(a, b) {
-  return a * b;
-}
-
-function divide(a, b) {
-  return a / b;
-}
-
+// Operations
 function operate(operator, a, b) {
-  if (operator === "+") return add(a, b);
-  else if (operator === "-") return substract(a, b);
-  else if (operator === "*") return multiply(a, b);
-  else if (operator === "/") return divide(a, b);
-  else return;
+  if (operator === "+") return a + b;
+  else if (operator === "-") return a - b;
+  else if (operator === "*") return a * b;
+  else if (operator === "/") return a / b;
 }

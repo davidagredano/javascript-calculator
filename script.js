@@ -2,26 +2,23 @@ let storedNumber;
 let operator;
 
 let display = {
-  value: "",
+  value: "0",
   DOMElement: document.getElementById("display"),
   append(str) {
     this.value += str;
-    this.update();
+    this.updateDOM();
   },
   replace(str) {
     this.value = str;
-    this.update();
+    this.updateDOM();
   },
-  update() {
+  updateDOM() {
     this.DOMElement.innerText = this.value;
   },
   clearValue() {
     this.value = "";
   },
 };
-
-const displayValue = display.value;
-console.table({ storedNumber, operator, displayValue });
 
 // Button click handlers
 const buttons = document.querySelector("#buttons");
@@ -30,20 +27,23 @@ buttons.addEventListener("click", (e) => {
   const isOperatorButton = e.target.classList.contains("operator");
   const isEqualsButton = e.target.id === "equals";
   const isClearButton = e.target.id === "clear";
-  console.log(isClearButton);
   if (isClearButton) {
-    display.replace("");
+    display.replace("0");
     storedNumber = null;
     operator = null;
   } else if (isNumberButton) {
     const numberClicked = e.target.innerText;
-    display.append(numberClicked);
-  } else if (isOperatorButton) {
-    if (!operator) {
-      storedNumber = Number(display.value);
-      operator = e.target.innerText;
-      display.clearValue();
-    } else if (operator) {
+    if (display.value === "0") {
+      display.replace(numberClicked);
+    } else {
+      display.append(numberClicked);
+    }
+  } else if (isEqualsButton || (isOperatorButton && operator)) {
+    // Check any missing element
+    const storedNumberExist = storedNumber || storedNumber === 0;
+    const displayValueExist = display.value || display.value === "0";
+    console.table({ storedNumberExist, displayValueExist });
+    if (storedNumberExist && operator && displayValueExist) {
       // Handle divide by 0 error
       if (operator === "/" && display.value === "0") {
         alert("#DIV/0! error");
@@ -52,38 +52,25 @@ buttons.addEventListener("click", (e) => {
         operator = null;
         return;
       }
-      // show the result
+
+      // Show the result
       const result = operate(operator, storedNumber, Number(display.value));
       display.replace(hasLongDecimals(result) ? result.toFixed(5) : result);
-      console.table({ storedNumber, operator });
 
-      // reset variables
+      // Reset variables
       storedNumber = result;
-      operator = e.target.innerText;
       display.clearValue();
-    }
-  } else if (isEqualsButton) {
-    if (storedNumber && operator && display.value) {
-      if (operator === "/" && display.value === "0") {
-        // Handle divide by 0 error
-        alert("#DIV/0! error");
-        display.replace("");
-        storedNumber = null;
+      if (isEqualsButton) {
         operator = null;
-        return;
+      } else if (isOperatorButton && operator) {
+        operator = e.target.innerText;
       }
-
-    // show the result
-    const result = operate(operator, storedNumber, Number(display.value));
-    display.replace(hasLongDecimals(result) ? result.toFixed(5) : result);
-
-    // reset variables
-    storedNumber = result;
-    operator = null;
     }
+  } else if (isOperatorButton) {
+    storedNumber = storedNumber ?? Number(display.value);
+    operator = e.target.innerText;
+    display.clearValue();
   }
-  const displayValue = display.value;
-  console.table({ storedNumber, operator, displayValue });
 });
 
 // Operations
